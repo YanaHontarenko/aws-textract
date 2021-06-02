@@ -19,11 +19,11 @@ class Analyzer:
         s3_response = s3_object.get()
         stream = io.BytesIO(s3_response['Body'].read())
         image_binary = stream.getvalue()
-        return image_binary
+        return stream, image_binary
 
     def analyze_image(self, bucket, image_name):
-        image_binary = self._get_data_from_bucket(bucket, image_name)
+        stream, image_binary = self._get_data_from_bucket(bucket, image_name)
         response = self.textract_client.analyze_document(Document={'Bytes': image_binary},
                                                          FeatureTypes=["TABLES", "FORMS"])
         blocks = response['Blocks']
-        return image_binary, blocks
+        return stream, blocks
